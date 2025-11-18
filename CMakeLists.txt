@@ -29,6 +29,7 @@ add_library(silicontwin_sim STATIC
   sim/src/adc.c
   sim/src/pwm.c
   sim/src/watchdog.c
+  sim/src/plant.c
 )
 target_include_directories(silicontwin_sim PUBLIC sim/include firmware/include)
 target_compile_options(silicontwin_sim PRIVATE ${SILICONTWIN_WARNINGS})
