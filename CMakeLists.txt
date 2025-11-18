@@ -25,6 +25,7 @@ add_library(silicontwin_sim STATIC
   sim/src/rng.c
   sim/src/gpio.c
   sim/src/uart.c
+  sim/src/can.c
 )
 target_include_directories(silicontwin_sim PUBLIC sim/include firmware/include)
 target_compile_options(silicontwin_sim PRIVATE ${SILICONTWIN_WARNINGS})
