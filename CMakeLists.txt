@@ -32,6 +32,8 @@ add_library(silicontwin_sim STATIC
   sim/src/plant.c
   sim/src/mcu.c
   sim/src/hal_sim.c
+  sim/src/faults.c
+  sim/src/board.c
 )
 target_include_directories(silicontwin_sim PUBLIC sim/include firmware/include)
 target_compile_options(silicontwin_sim PRIVATE ${SILICONTWIN_WARNINGS})
