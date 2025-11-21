@@ -54,7 +54,8 @@ typedef struct mcu {
     can_bus_t *can_bus;
     uint8_t can_node;
 
-    uint8_t retained_ram[MCU_RETAINED_RAM_SIZE];
+    /* Word-aligned so firmware can overlay structs on it. */
+    uint64_t retained_ram[MCU_RETAINED_RAM_SIZE / sizeof(uint64_t)];
     uint8_t flash[MCU_FLASH_SIZE];
 
     mcu_firmware_t fw;

@@ -39,8 +39,9 @@ void mcu_init(mcu_t *mcu, sim_clock_t *clock, sim_rng_t *rng, uint32_t uart_baud
 void mcu_power_on(mcu_t *mcu)
 {
     /* Retained RAM holds garbage after power-on; firmware must validate it. */
+    uint8_t *ram = (uint8_t *)mcu->retained_ram;
     for (size_t i = 0; i < MCU_RETAINED_RAM_SIZE; i++) {
-        mcu->retained_ram[i] = (uint8_t)(mcu->rng ? sim_rng_next(mcu->rng) : 0xA5);
+        ram[i] = (uint8_t)(mcu->rng ? sim_rng_next(mcu->rng) : 0xA5);
     }
     mcu_reset(mcu, HAL_RESET_POWER_ON);
 }
