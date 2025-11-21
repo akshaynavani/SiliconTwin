@@ -44,7 +44,9 @@ typedef struct {
 
 void plant_default_params(plant_params_t *p);
 void plant_init(plant_t *plant, const plant_params_t *params);
-void plant_step(plant_t *plant, double duty, double dt);
+/* hiz: both switches off (PWM disabled); the inductor then freewheels
+ * through the low-side body diode until its current reaches zero. */
+void plant_step(plant_t *plant, double duty, bool hiz, double dt);
 
 void plant_set_load(plant_t *plant, double r_load);
 void plant_set_vin(plant_t *plant, double vin);

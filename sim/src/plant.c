@@ -33,16 +33,32 @@ double plant_effective_load(const plant_t *plant)
     return (plant->r_load * plant->r_short) / (plant->r_load + plant->r_short);
 }
 
-void plant_step(plant_t *plant, double duty, double dt)
+void plant_step(plant_t *plant, double duty, bool hiz, double dt)
 {
     const plant_params_t *p = &plant->p;
     double r_load = plant_effective_load(plant);
+    const double v_diode = 0.7;
 
-    double di = (duty * p->vin - plant->v_out - plant->i_l * p->r_inductor) / p->inductance;
+    double v_sw;
+    if (!hiz) {
+        v_sw = duty * p->vin;
+    } else if (plant->i_l > 0.0) {
+        v_sw = -v_diode; /* low-side body diode conducts */
+    } else if (plant->i_l < 0.0) {
+        v_sw = p->vin + v_diode; /* high-side body diode returns energy to the input */
+    } else {
+        v_sw = plant->v_out; /* no current path: inductor stays at zero */
+    }
+
+    double di = (v_sw - plant->v_out - plant->i_l * p->r_inductor) / p->inductance;
     double i_load = r_load > 0.0 ? plant->v_out / r_load : 0.0;
     double dv = (plant->i_l - i_load) / p->capacitance;
 
+    double i_prev = plant->i_l;
     plant->i_l += di * dt;
+    if (hiz && ((i_prev > 0.0 && plant->i_l < 0.0) || (i_prev < 0.0 && plant->i_l > 0.0))) {
+        plant->i_l = 0.0; /* diodes block reverse current */
+    }
     plant->v_out += dv * dt;
     if (plant->v_out < 0.0) {
         /* Body diode of the low-side switch clamps the output near ground. */
@@ -51,7 +67,7 @@ void plant_step(plant_t *plant, double duty, double dt)
 
     double i_abs = plant->i_l < 0.0 ? -plant->i_l : plant->i_l;
     double conduction = plant->i_l * plant->i_l * p->r_inductor;
-    double switching = duty > 0.0 ? p->k_switching * p->vin * i_abs : 0.0;
+    double switching = (!hiz && duty > 0.0) ? p->k_switching * p->vin * i_abs : 0.0;
     plant->p_loss = conduction + switching;
     double t_target = p->t_ambient + p->r_thermal * plant->p_loss;
     plant->temp += (t_target - plant->temp) * dt / p->tau_thermal;

@@ -57,9 +57,10 @@ void board_power_on(sim_board_t *b)
 void board_step(sim_board_t *b)
 {
     double duty = pwm_effective_duty(&b->mcu.pwm);
+    bool hiz = !b->mcu.pwm.enabled || b->mcu.pwm.break_active;
     double dt = (double)b->cfg.step_us * 1e-6 / (double)b->cfg.plant_substeps;
     for (uint32_t i = 0; i < b->cfg.plant_substeps; i++) {
-        plant_step(&b->plant, duty, dt);
+        plant_step(&b->plant, duty, hiz, dt);
     }
 
     sim_clock_advance(&b->clock, b->cfg.step_us);
