@@ -60,3 +60,10 @@ target_compile_options(silicontwin_sim PRIVATE ${SILICONTWIN_WARNINGS})
 if(NOT MSVC)
   target_link_libraries(silicontwin_sim PUBLIC m)
 endif()
+
+# ---------------------------------------------------------------------------
+# Command line simulator
+# ---------------------------------------------------------------------------
+add_executable(silicontwin app/main.c)
+target_link_libraries(silicontwin PRIVATE silicontwin_sim)
+target_compile_options(silicontwin PRIVATE ${SILICONTWIN_WARNINGS})
