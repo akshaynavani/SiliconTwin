@@ -60,8 +60,8 @@ uint8_t fw_prot_slow(fw_prot_t *p, const fw_meas_t *m, float duty, float vref, b
 
     /* Sensor plausibility: in the averaged steady state the switch-node
      * voltage d*Vin minus the resistive drop must match the measured output.
-     * Both sides are low-pass filtered (tau ~ 4 ms) to ignore LC transients. */
-    const float alpha = 0.25f;
+     * Both sides are low-pass filtered (tau ~ 1.5 ms) to ignore LC transients. */
+    const float alpha = 0.5f;
     float v_est = duty * m->vin - m->iout * 0.05f;
     p->vout_filt += alpha * (m->vout - p->vout_filt);
     p->vest_filt += alpha * (v_est - p->vest_filt);

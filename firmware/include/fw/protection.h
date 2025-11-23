@@ -35,7 +35,7 @@ extern "C" {
 #define FW_PROT_UVP_MS    20u
 #define FW_PROT_VIN_MS    5u
 #define FW_PROT_OTP_MS    10u
-#define FW_PROT_SENSOR_MS 10u
+#define FW_PROT_SENSOR_MS 3u
 #define FW_PROT_VIN_HYST  1.0f
 
 typedef enum {
