@@ -51,6 +51,7 @@ add_library(silicontwin_sim STATIC
   sim/src/faults.c
   sim/src/board.c
   sim/src/config.c
+  sim/src/scenario.c
   $<TARGET_OBJECTS:silicontwin_firmware>
 )
 target_include_directories(silicontwin_sim PUBLIC sim/include firmware/include)
