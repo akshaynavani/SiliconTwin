@@ -67,3 +67,11 @@ endif()
 add_executable(silicontwin app/main.c)
 target_link_libraries(silicontwin PRIVATE silicontwin_sim)
 target_compile_options(silicontwin PRIVATE ${SILICONTWIN_WARNINGS})
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+if(SILICONTWIN_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
