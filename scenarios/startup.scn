@@ -1,0 +1,3 @@
+# Plain start-up with the enable pin high from t=0.
+0    mark startup
+100  end

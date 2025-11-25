@@ -1,0 +1,9 @@
+# Setpoint and current-limit changes over CAN, including rejected commands.
+50   can_cmd vref 10
+50   mark vref_10
+150  can_cmd ilim 5
+160  can_cmd vref 30          # out of range -> NACK
+170  can 0x201 55             # unknown command -> NACK
+200  can_cmd vref 12
+200  mark vref_12
+300  end

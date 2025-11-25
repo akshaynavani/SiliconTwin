@@ -1,0 +1,8 @@
+# Hard short on the output: the firmware must trip, retry max_retries times,
+# then latch off. After the short is removed an enable toggle restarts it.
+50   fault output_short 0.02
+800  clear output_short
+850  enable 0
+870  enable 1
+870  mark recovery
+1000 end

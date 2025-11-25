@@ -1,0 +1,5 @@
+# Output voltage sense line fails (ADC reads 0). The plausibility check must
+# detect it and latch off; it must not auto-restart.
+60   fault adc_stuck 0 0
+60   mark sensor_fault
+200  end

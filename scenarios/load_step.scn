@@ -1,0 +1,6 @@
+# 5 A -> 7.5 A -> 2.5 A load steps once the output is in regulation.
+60   mark step_up
+60   load 1.6
+120  mark step_down
+120  load 4.8
+180  end

@@ -1,0 +1,6 @@
+# Hot ambient drives the heatsink past otp_trip; after cooling below
+# otp_clear the converter restarts without operator action.
+50   fault overtemp 150
+2700 clear overtemp
+2700 mark cooldown
+4000 end

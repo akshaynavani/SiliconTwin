@@ -1,0 +1,6 @@
+# Repeated stalls without a healthy interval in between: after the third
+# consecutive watchdog reset the firmware must stop restarting and latch.
+100  fault fw_hang 0
+250  fault fw_hang 0
+400  fault fw_hang 0
+600  end

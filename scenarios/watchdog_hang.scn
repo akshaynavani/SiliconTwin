@@ -1,0 +1,5 @@
+# The super-loop stalls once; the watchdog must reset the MCU and the
+# firmware must come back up into regulation on its own.
+100  fault fw_hang 0
+100  mark wdt_recovery
+400  end

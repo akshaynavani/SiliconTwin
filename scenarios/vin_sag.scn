@@ -1,0 +1,9 @@
+# Input sag below vin_min trips VIN_UV without consuming retries; the
+# converter restarts automatically once the input recovers. Then a brown-out
+# reset of the MCU itself.
+50   vin 15
+120  vin 48
+120  mark vin_recovered
+250  fault brownout
+250  mark after_brownout
+400  end

@@ -1,0 +1,6 @@
+# Noisy bus followed by a forced bus-off; the node must recover and resume
+# telemetry while power conversion is unaffected.
+20   fault can_errors 0.3
+200  clear can_errors
+250  fault can_bus_off
+400  end

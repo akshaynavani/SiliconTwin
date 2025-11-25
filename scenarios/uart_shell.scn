@@ -1,0 +1,11 @@
+# Exercise the UART shell, including corrupted input under line noise.
+30   uart "status"
+40   uart "set vref 9.5"
+40   mark vref_9v5
+80   uart "faults"
+90   uart "bogus"
+100  fault uart_noise 0.5
+110  uart "status"
+130  clear uart_noise
+140  uart "stats"
+200  end

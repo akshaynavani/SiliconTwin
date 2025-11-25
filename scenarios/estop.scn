@@ -1,0 +1,7 @@
+# Emergency stop and the restart interlock (enable must cycle).
+50   estop 1
+80   estop 0
+120  enable 0
+140  enable 1
+140  mark restart
+250  end
