@@ -22,9 +22,9 @@ void fw_params_defaults(fw_params_t *p)
 {
     memset(p, 0, sizeof(*p));
     p->vref = 12.0f;
-    p->kp_v = 0.5f;
-    p->ki_v = 250.0f;
-    p->kp_i = 0.3f;
+    p->kp_v = 3.0f;
+    p->ki_v = 1500.0f;
+    p->kp_i = 0.45f;
     p->current_limit = 8.0f;
     p->soft_start_ms = 20;
 

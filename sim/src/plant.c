@@ -6,7 +6,7 @@ void plant_default_params(plant_params_t *p)
 {
     p->vin = 48.0;
     p->inductance = 47e-6;
-    p->capacitance = 220e-6;
+    p->capacitance = 470e-6;
     p->r_inductor = 0.05;
     p->r_load = 2.4;   /* 12 V at 5 A */
     p->t_ambient = 25.0;
