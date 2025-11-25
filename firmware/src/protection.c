@@ -1,5 +1,7 @@
 #include "fw/protection.h"
 
+#include "fw/hal.h"
+
 static uint8_t debounce(uint16_t *counter, bool condition, uint16_t limit, uint8_t fault)
 {
     if (!condition) {
@@ -69,7 +71,11 @@ uint8_t fw_prot_slow(fw_prot_t *p, const fw_meas_t *m, float duty, float vref, b
     if (diff < 0.0f) {
         diff = -diff;
     }
-    faults |= debounce(&p->sensor_count, regulating && diff > prm->sensor_tolerance,
+    /* A sense line pinned at either ADC rail while regulating is an open or
+     * shorted divider: a real output never sits at exactly 0 V or full scale. */
+    bool at_rail = m->vout <= 0.0f || m->vout >= HAL_ADC_VOUT_FULL_SCALE - 0.01f;
+    bool implausible = diff > prm->sensor_tolerance || at_rail;
+    faults |= debounce(&p->sensor_count, regulating && implausible,
                        FW_PROT_SENSOR_MS, FW_FAULT_SENSOR);
     return faults;
 }
