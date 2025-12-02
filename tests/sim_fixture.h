@@ -14,6 +14,7 @@ extern "C" {
 #include "fw/firmware.h"
 #include "fw/params.h"
 #include "fw/protection.h"
+#include "fw/shell.h"
 #include "sim/board.h"
 }
 
