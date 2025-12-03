@@ -107,7 +107,8 @@ TEST_F(CanBusTest, BusErrorsRaiseErrorCountersAndRetransmit) {
     can_bus_set_error_rate(&bus_, 1.0);
     can_frame_t f = frame(0x42);
     can_node_send(&bus_, a_, &f);
-    run_us(5000);
+    run_us(1000);  // a handful of failed attempts, well short of bus-off
+    EXPECT_NE(can_node_state(&bus_, a_), CAN_STATE_BUS_OFF);
     EXPECT_GT(bus_.nodes[a_].tec, 0u);
     EXPECT_GT(bus_.nodes[b_].rec, 0u);
     EXPECT_EQ(bus_.frames_ok, 0u);

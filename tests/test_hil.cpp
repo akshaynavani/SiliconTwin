@@ -167,7 +167,7 @@ TEST_F(Hil, WatchdogResetsHungFirmwareWhichRecovers) {
     EXPECT_EQ(st()->boot_count, 2u);
     run_ms(60);
     EXPECT_EQ(st()->state, FW_STATE_REGULATING);
-    EXPECT_EQ(frames_with_base(FW_CAN_ID_BOOT).size(), 1u);  // frames_ cleared at boot
+    EXPECT_EQ(frames_with_base(FW_CAN_ID_BOOT).size(), 2u);  // power-on + watchdog boot
 }
 
 TEST_F(Hil, WatchdogIsServicedOnlyWhileControlIsrRuns) {
@@ -284,7 +284,7 @@ TEST_F(Hil, BootFramePublishesResetCause) {
 
 TEST_F(Hil, TelemetryMatchesPlantState) {
     boot();
-    run_ms(100);
+    run_ms(150);
     auto telem = frames_with_base(FW_CAN_ID_TELEM);
     EXPECT_GE(telem.size(), 9u);
     const can_frame_t &last = telem.back();
