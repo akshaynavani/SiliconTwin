@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "silicontwin-harness"
+version = "0.1.0"
+description = "Regression harness that drives the SiliconTwin firmware simulator across configurations and fault scenarios"
+readme = "../README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+silicontwin-regress = "silicontwin_harness.cli:main"
+
+[tool.setuptools]
+packages = ["silicontwin_harness"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
