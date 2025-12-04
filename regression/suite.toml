@@ -1,0 +1,188 @@
+# SiliconTwin regression suite.
+#   silicontwin-regress run regression/suite.toml --junit out/junit.xml
+# Tags: smoke (fast sanity), protection, comms, reset, tuning, slow.
+
+[suite]
+name = "silicontwin-regression"
+config_dir = "../configs"
+scenario_dir = "../scenarios"
+binary = "../build/silicontwin"
+
+# ------------------------------------------------------------- regulation
+[[case]]
+name = "startup"
+scenario = "startup.scn"
+tags = ["smoke"]
+matrix = { config = ["nominal_12v.ini", "low_voltage_5v.ini", "high_output_24v.ini"], seed = [1, 2] }
+[case.expect]
+"firmware.final_state" = "REGULATING"
+"regulation.pgood_final" = true
+"regulation.vout_final" = { approx = "$regulation.vref_final", rel = 0.01 }
+"regulation.startup_ms" = { min = 15, max = 45 }
+"regulation.overshoot_pct" = { max = 3.0 }
+"faults" = { len = 0 }
+"can.rx.boot" = 1
+
+[[case]]
+name = "noise_robustness"
+config = "nominal_12v.ini"
+scenario = "startup.scn"
+tags = ["tuning"]
+matrix = { "bench.adc_noise_lsb" = [0.0, 2.0, 4.0], seed = [3, 4] }
+[case.expect]
+"firmware.final_state" = "REGULATING"
+"regulation.steady_state_error" = { max = 0.06 }
+"faults" = { len = 0 }
+
+[[case]]
+name = "load_step_gain_sweep"
+config = "nominal_12v.ini"
+scenario = "load_step.scn"
+tags = ["tuning"]
+matrix = { "firmware.kp_v" = [2.0, 3.0, 4.0] }
+[case.expect]
+"firmware.final_state" = "REGULATING"
+"windows[0].label" = "step_up"
+"windows[0].vout_min" = { min = 10.8 }
+"windows[0].settle_ms" = { min = 0, max = 10 }
+"windows[1].vout_max" = { max = 13.2 }
+"faults" = { len = 0 }
+
+[[case]]
+name = "aggressive_gains"
+config = "aggressive_gains.ini"
+scenario = "startup.scn"
+tags = ["tuning"]
+[case.expect]
+"firmware.final_state" = "REGULATING"
+"regulation.overshoot_pct" = { max = 5.0 }
+"regulation.startup_ms" = { max = 20 }
+
+[[case]]
+name = "defaults_fallback"
+config = "defaults_fallback.ini"
+scenario = "startup.scn"
+tags = ["smoke"]
+[case.expect]
+"firmware.params_from_flash" = false
+"regulation.vout_final" = { approx = 12.0, tol = 0.1 }
+
+# ------------------------------------------------------------- protection
+[[case]]
+name = "short_circuit_latch_and_recover"
+config = "nominal_12v.ini"
+scenario = "short_circuit.scn"
+tags = ["protection"]
+[case.expect]
+"faults[0].fault" = "OCP"
+"faults" = { len = 4 }
+"firmware.fault_history" = { contains = "UVP" }
+"transitions[*].to" = { contains = "LATCHED" }
+"firmware.final_state" = "REGULATING"
+"windows[0].settle_ms" = { min = 0, max = 40 }
+"can.rx.fault" = { min = 1 }
+
+[[case]]
+name = "input_sag_and_brownout"
+config = "nominal_12v.ini"
+scenario = "vin_sag.scn"
+tags = ["protection", "reset"]
+[case.expect]
+"faults[0].fault" = "VIN_UV"
+"firmware.retries" = 0
+"resets" = { len = 1 }
+"resets[0].cause" = "brownout"
+"firmware.final_state" = "REGULATING"
+
+[[case]]
+name = "sensor_stuck_latches"
+config = "nominal_12v.ini"
+scenario = "sensor_stuck.scn"
+tags = ["protection"]
+[case.expect]
+"firmware.final_state" = "LATCHED"
+"firmware.final_fault" = "SENSOR"
+"faults" = { len = 1 }
+"regulation.vout_max" = { max = 13.0 }
+
+[[case]]
+name = "estop_interlock"
+config = "nominal_12v.ini"
+scenario = "estop.scn"
+tags = ["protection"]
+[case.expect]
+"transitions[*].to" = { contains = "ESTOP" }
+"firmware.final_state" = "REGULATING"
+"windows[0].settle_ms" = { min = 0, max = 40 }
+
+[[case]]
+name = "overtemperature_restart"
+config = "nominal_12v.ini"
+scenario = "overtemp.scn"
+tags = ["protection", "slow"]
+[case.expect]
+"faults[0].fault" = "OTP"
+"regulation.temp_peak" = { min = 110 }
+"firmware.final_state" = "REGULATING"
+
+# ------------------------------------------------------- watchdog & resets
+[[case]]
+name = "watchdog_recovers_hang"
+config = "nominal_12v.ini"
+scenario = "watchdog_hang.scn"
+tags = ["reset", "smoke"]
+[case.expect]
+"resets" = { len = 1 }
+"resets[0].cause" = "watchdog"
+"watchdog.expirations" = 1
+"firmware.final_state" = "REGULATING"
+"can.rx.boot" = 2
+
+[[case]]
+name = "watchdog_reset_loop_latches"
+config = "nominal_12v.ini"
+scenario = "watchdog_reset_loop.scn"
+tags = ["reset"]
+matrix = { "firmware.wdt_timeout_ms" = [20, 50] }
+[case.expect]
+"resets" = { len = 3 }
+"resets[*].cause" = { contains = "watchdog" }
+"firmware.final_state" = "LATCHED"
+"firmware.final_fault" = "WATCHDOG"
+
+# ------------------------------------------------------------------ comms
+[[case]]
+name = "can_commands"
+config = "nominal_12v.ini"
+scenario = "can_commands.scn"
+tags = ["comms", "smoke"]
+[case.expect]
+"can.acks" = { len = 5 }
+"can.acks[0].status" = 0
+"can.acks[2].status" = 2
+"can.acks[3].status" = 1
+"windows[0].settle_ms" = { min = 0, max = 15 }
+"regulation.vout_final" = { approx = 12.0, tol = 0.05 }
+
+[[case]]
+name = "can_bus_errors_and_bus_off"
+config = "nominal_12v.ini"
+scenario = "can_bus_errors.scn"
+tags = ["comms"]
+matrix = { seed = [1, 7, 42] }
+[case.expect]
+"can.bus_off_events" = { min = 1 }
+"can.final_state" = "error_active"
+"can.rx.telemetry" = { min = 20 }
+"firmware.final_state" = "REGULATING"
+
+[[case]]
+name = "uart_shell"
+config = "nominal_12v.ini"
+scenario = "uart_shell.scn"
+tags = ["comms"]
+[case.expect]
+"uart.output" = { contains = "OK vref=9.500", not_contains = "ERR unknown command 'status'" }
+"uart.framing_errors" = { min = 1 }
+"regulation.vout_final" = { approx = 9.5, tol = 0.05 }
+"windows[0].settle_ms" = { min = 0, max = 15 }
