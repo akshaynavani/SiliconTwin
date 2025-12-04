@@ -22,12 +22,17 @@ combination becomes its own case named ``<name>[k=v,...]``.
 from __future__ import annotations
 
 import itertools
-import tomllib
+import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
 from .runner import RunSpec
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:  # pragma: no cover - exercised on older interpreters only
+    import tomli as tomllib
 
 _SPECIAL = {"config", "scenario", "seed", "duration_ms"}
 

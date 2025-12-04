@@ -7,8 +7,8 @@ name = "silicontwin-harness"
 version = "0.1.0"
 description = "Regression harness that drives the SiliconTwin firmware simulator across configurations and fault scenarios"
 readme = "../README.md"
-requires-python = ">=3.11"
-dependencies = []
+requires-python = ">=3.9"
+dependencies = ["tomli>=2; python_version < '3.11'"]
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
