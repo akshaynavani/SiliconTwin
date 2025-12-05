@@ -128,6 +128,8 @@ def load_suite(path: str | Path) -> Suite:
     path = Path(path).resolve()
     try:
         data = tomllib.loads(path.read_text())
+    except OSError as exc:
+        raise SuiteError(f"cannot read suite: {exc}") from exc
     except tomllib.TOMLDecodeError as exc:
         raise SuiteError(f"{path}: {exc}") from exc
     meta = data.get("suite", {})
